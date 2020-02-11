@@ -1,0 +1,50 @@
+---
+
+- name: Transfer instance configuration template files to the remote host
+  template:
+    src: "{{ item.src_path }}"
+    dest: "{{ item.dest_path }}"
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    mode: "0644"
+  loop:
+    - { src_path: "node01-config.xml.j2", dest_path: "{{ ignite_config_dir }}/node01-config.xml" }
+    - { src_path: "node02-config.xml.j2", dest_path: "{{ ignite_config_dir }}/node02-config.xml" }
+
+- name: Create required directories if they dont exist
+  file:
+    path: "/opt/{{ item }}"
+    state: directory
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    mode: "0755"
+    recurse: yes
+  loop:
+    - data-persist-1
+    - data-persist-2
+    - data-wal-1
+    - data-wal-2
+
+- name: Ensure that firewalld configuration is done
+  firewalld:
+    port: "{{ item }}"
+    permanent: yes
+    state: enabled
+    immediate: yes
+  loop: 
+    - 48500-48509/tcp
+    - 49100/tcp
+    - 49101/tcp
+    - 10800/tcp
+
+- name: Ensure that ignite instances are started
+  systemd:
+    state: started
+    enabled: true
+    daemon_reload: yes
+    name: "{{ item }}"
+  loop:
+    - apache-ignite@node01-config.xml
+    - apache-ignite@node02-config.xml
+
+...

@@ -1,0 +1,11 @@
+---
+
+- name: Import uninstall_single_node.yml tasks file
+  include_tasks: uninstall_single_node.yml
+  when: ansible_play_hosts | length == 1
+
+- name: Import uninstall_multi_node.yml tasks file
+  include_tasks: uninstall_multi_node.yml
+  when: ansible_play_hosts | length > 1
+
+...

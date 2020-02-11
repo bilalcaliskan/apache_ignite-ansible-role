@@ -1,0 +1,19 @@
+[Unit]
+Description=Apache Ignite In-Memory Computing Platform Service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+User={{ ignite_user }}
+WorkingDirectory={{ ignite_root_dir }}
+PermissionsStartOnly=true
+ExecStartPre=-/usr/bin/mkdir -p /var/run/apache-ignite
+ExecStartPre=-/usr/bin/chown {{ ignite_user }}:{{ ignite_group }} /var/run/apache-ignite
+ExecStartPre=-/usr/bin/env bash {{ ignite_bin_dir }}/service.sh set-firewall
+ExecStart={{ ignite_bin_dir }}/service.sh start %i
+PIDFile=/var/run/apache-ignite/%i.pid
+LimitNOFILE={{ open_file_limit }}
+LimitNPROC={{ process_limit }}
+
+[Install]
+WantedBy=multi-user.target

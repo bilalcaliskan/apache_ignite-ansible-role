@@ -1,0 +1,17 @@
+galaxy_info:
+  author: bilalcaliskan
+  role_name: apache_ignite
+  description: Apache Ignite Cluster Setup Role
+  min_ansible_version: 2.4
+  galaxy_tags:
+    - configuration
+    - apache
+    - ignite
+  license: "license (BSD, MIT)"
+  platforms:
+    - name: EL
+      versions:
+        - 7
+        - 8
+
+dependencies: []

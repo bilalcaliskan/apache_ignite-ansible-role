@@ -1,0 +1,52 @@
+---
+
+- name: Ensure Ignite service stopped and disabled
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - apache-ignite@node01-config.xml
+    - apache-ignite@node02-config.xml
+
+- name: Revoke firewalld permission
+  firewalld:
+    port: "{{ item }}"
+    immediate: true
+    permanent: true
+    state: disabled
+  loop:
+    - 48500-48509/tcp
+    - 49100/tcp
+    - 49101/tcp
+    - 10800/tcp
+
+- name: Remove Ignite related directories and files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ ignite_root_dir }}"
+    - "{{ ignite_log_dir_dest }}"
+    - "{{ systemd_service_file_path }}"
+    - "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
+    - /opt/data-persist-1
+    - /opt/data-persist-2
+    - /opt/data-wal-1
+    - /opt/data-wal-2
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: true
+
+- name: Ensure {{ ignite_user }} user no more exists
+  user:
+    name: "{{ ignite_user }}"
+    state: absent
+
+- name: Ensure {{ ignite_group }} group no more exists
+  group:
+    name: "{{ ignite_group }}"
+    state: absent
+
+...

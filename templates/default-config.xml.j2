@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="localAddress" value="0.0.0.0"/>
+                <property name="localPort" value="48500"/>
+                <property name="ipFinder">
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
+		        <property name="addresses">
+                            <list>
+{% set hosts = groups[hostvars[inventory_hostname].group_names[0]] -%}
+{% for host in hosts %}
+                                <value>{{ host }}:48500</value>
+{% endfor %}
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="communicationSpi">
+            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                <property name="localAddress" value="0.0.0.0"/>
+                <property name="localPort" value="48100"/>
+                <property name="usePairedConnections" value="true"/>
+            </bean>
+        </property>
+        <property name="failureDetectionTimeout" value="60000"/>
+        <property name="systemThreadPoolSize" value="64"/>
+        <property name="publicThreadPoolSize" value="64"/>
+        <property name="queryThreadPoolSize" value="64"/>
+        <property name="serviceThreadPoolSize" value="64"/>
+        <property name="stripedPoolSize" value="64"/>
+        <property name="dataStreamerThreadPoolSize" value="32"/>
+        <property name="rebalanceThreadPoolSize" value="8"/>
+        <property name="cacheConfiguration">
+            <list>
+                <!-- Partitioned cache example configuration (Atomic mode). -->
+                <bean class="org.apache.ignite.configuration.CacheConfiguration">
+                    <property name="name" value="default"/>
+                    <property name="atomicityMode" value="ATOMIC"/>
+                    <property name="backups" value="1"/>
+                </bean>
+            </list>
+        </property>
+        <!-- Enabling Apache Ignite native persistence. -->
+        <property name="dataStorageConfiguration">
+         <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+               <property name="defaultDataRegionConfiguration">
+                 <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                    <property name="persistenceEnabled" value="true"/>
+                    <property name="checkpointPageBufferSize" value="#{1 * 1024 * 1024 * 1024}"/>
+                    <property name="maxSize" value="#{4L * 1024 * 1024 * 1024}"/>
+                  </bean>
+                </property>
+                <property name="walHistorySize" value="0"/>
+                <property name="walSegmentSize" value="#{128L * 1024 * 1024}"/>
+                <property name="walMode" value="LOG_ONLY"/>
+                <property name="writeThrottlingEnabled" value="true"/>
+                <property name="storagePath" value="/opt/data-persist"/>
+                <property name="walPath" value="/opt/data-wal"/>
+                <property name="walArchivePath" value="/opt/data-wal"/>
+                <property name="walCompactionEnabled" value="true" />
+                <property name="checkpointFrequency" value="60000"/>
+                <property name="checkpointWriteOrder" value="SEQUENTIAL" />
+            </bean>
+        </property>
+    </bean>
+</beans>

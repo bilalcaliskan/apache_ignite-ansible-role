@@ -1,0 +1,141 @@
+---
+
+- name: Ensure required packages are installed
+  yum:
+    name: "{{ required_packages }}"
+    state: present
+
+- name: Ensure {{ ignite_group }} group exists
+  group:
+    name: "{{ ignite_group }}"
+    state: present
+
+- name: Ensure {{ ignite_user }} user exists
+  user:
+    name: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    shell: /bin/bash
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+  when: disable_swap
+
+- name: Disable swap
+  command: swapoff -a
+  when:
+    - disable_swap
+    - ansible_swaptotal_mb > 0
+
+- name: Check if ignite downloaded and extracted
+  stat:
+    path: "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
+  register: ignite_directory
+
+- name: Download and unarchive ignite
+  unarchive:
+    src: "{{ ignite_bin_download_url }}"
+    dest: "{{ ignite_base_dir }}"
+    remote_src: yes
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    mode: 0744
+  when: not ignite_directory.stat.exists
+
+- name: Create a symbolic link of root ignite folder
+  file:
+    src: "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
+    dest: "{{ ignite_root_dir }}"
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    state: link
+
+- name: Create work directory if it does not exists
+  file:
+    path: "{{ ignite_root_dir }}/work"
+    state: directory
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    mode: 0755
+    recurse: yes
+
+- name: Transfer systemd service template file to the remote host
+  template:
+    src: apache-ignite@.service.j2
+    dest: "{{ systemd_service_file_path }}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Transfer script templates to the remote host
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ignite_bin_dir }}/{{ item }}"
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    mode: 0755
+  loop:
+    - service.sh
+    - ignite.sh
+
+- name: Recursively change the mode of bin folder
+  file:
+    path: "{{ ignite_bin_dir }}"
+    state: directory
+    recurse: yes
+    mode: 0755
+
+- name: Import single_node.yml tasks file
+  import_tasks: install_single_node.yml
+  when: ansible_play_hosts | length == 1
+
+- name: Import multi_node.yml tasks file
+  import_tasks: install_multi_node.yml
+  when: ansible_play_hosts | length > 1
+
+- name: Wait for port 48500 to become open on the remote host
+  wait_for:
+    port: 48500
+    delay: 5
+
+- name: Run clustering stuff
+  block:
+    - name: Information message
+      debug:
+        msg: Cluster activation will take a while, go grab a coffee :)
+      delegate_to: localhost
+      run_once: true
+
+    - name: Pause for 30 seconds before starting activation
+      pause:
+        seconds: 30
+
+    - name: Run clustering scripts
+      command: /bin/bash {{ ignite_bin_dir }}/control.sh --activate --yes
+      async: 1000
+      poll: 0
+      delegate_to: "{{ play_hosts | first }}"
+      run_once: true
+      register: init_cluster
+
+    - name: Check on cluster initialization
+      async_status:
+        jid: "{{ init_cluster.ansible_job_id }}"
+      register: check_result
+      until: check_result.finished
+      retries: 30
+      delegate_to: "{{ play_hosts | first }}"
+      run_once: true
+  when: (persistence.enabled | bool)
+
+- name: Create a symbolic link of log folder
+  file:
+    src: "{{ ignite_log_dir_src }}"
+    dest: "{{ ignite_log_dir_dest }}"
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    state: link
+
+...
