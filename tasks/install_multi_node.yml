@@ -22,16 +22,26 @@
     - data-wal
     - data-wal
 
-- name: Ensure that firewalld configuration is done
-  firewalld:
-    port: "{{ item }}"
-    permanent: yes
-    state: enabled
-    immediate: yes
-  loop:
-    - 48500/tcp
-    - 48100/tcp
-    - 10800/tcp
+- name: Firewalld related block
+  block:
+    - name: Ensure firewalld is started and enabled
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+      changed_when: false
+
+    - name: Ensure that firewalld configuration is done
+      firewalld:
+        port: "{{ item }}"
+        permanent: yes
+        state: enabled
+        immediate: yes
+      loop:
+        - 48500/tcp
+        - 48100/tcp
+        - 10800/tcp
+  when: (firewalld_enabled | bool)
 
 - name: Ensure that ignite instance is started
   systemd:

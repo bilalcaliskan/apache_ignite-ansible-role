@@ -7,5 +7,3 @@
 - name: Include uninstall_main.yml file
   include_tasks: uninstall_main.yml
   when: not (install_ignite | bool)
-
-...

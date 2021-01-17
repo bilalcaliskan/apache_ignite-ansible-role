@@ -29,6 +29,13 @@
     - disable_swap
     - ansible_swaptotal_mb > 0
 
+- name: Stop firewalld if desired by user
+  service:
+    name: firewalld
+    state: stopped
+    enabled: false
+  when: not (firewalld_enabled | bool)
+
 - name: Check if ignite downloaded and extracted
   stat:
     path: "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
@@ -137,5 +144,3 @@
     owner: "{{ ignite_user }}"
     group: "{{ ignite_group }}"
     state: link
-
-...

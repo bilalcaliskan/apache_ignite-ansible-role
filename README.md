@@ -1,38 +1,77 @@
-Role Name
-=========
+## Apache Ignite Ansible Role
 
-A brief description of the role goes here.
+[![CI](https://github.com/bilalcaliskan/nginx-ansible-role/workflows/CI/badge.svg?event=push)](https://github.com/bilalcaliskan/nginx-ansible-role/actions?query=workflow%3ACI)
 
-Requirements
-------------
+Installs and configures Apache Ignite on RedHat/CentOS servers(7 and 8).
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+### Requirements
 
-Role Variables
---------------
+No special requirements; note that this role requires root access, so either run it in a playbook with a global `become: true`, or invoke the role in your playbook like:
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+- hosts: all
+  become: true
+  roles:
+    - role: bilalcaliskan.apache_ignite
+```
 
-Dependencies
-------------
+### Role Variables
+See the default values in [defaults/main.yml](defaults/main.yml). You can overwrite them in [vars/main.yml](vars/main.yml) if neccessary or you can set them while running playbook.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+> Please note that this role will ensure that `firewalld` systemd service on your servers are started and enabled by default. If you want to stop and disable `firewalld` service, please modify below variable as false when running playbook:  
+> ```yaml  
+> firewalld_enabled: false
 
-Example Playbook
-----------------
+### Dependencies
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+None
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+### Example Inventory File
+*Single node*
+```
+[ignite]
+ignitenode01.example.com
+```
 
-License
--------
+*Multi node*
+```
+[ignite]
+ignitenode01.example.com
+ignitenode02.example.com
+ignitenode03.example.com
+```
 
-BSD
+### Example Playbook File For Installation
 
-Author Information
-------------------
+```yaml
+- hosts: all
+  become: true
+  roles:
+    - role: bilalcaliskan.apache_ignite
+      vars:
+        install_ignite: true
+        ignite_version: 2.7.5
+        open_file_limit: 166384
+        process_limit: 127949
+        java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -servers
+```
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+You can also override default variables inside [vars/main.yml](vars/main.yml)*:
+```yaml
+java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server
+```
+
+### Example Playbook File For `Ununinstallation`
+
+```yaml
+- hosts: all
+  become: true
+  roles:
+    - role: bilalcaliskan.apache_ignite
+      vars:
+        install_ignite: false
+```
+
+### License
+
+MIT / BSD

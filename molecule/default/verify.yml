@@ -1,0 +1,9 @@
+---
+
+- name: Verify port
+  hosts: all
+  tasks:
+    ### TODO: add verify
+    - name: Debug
+      debug:
+        msg: Debug messages

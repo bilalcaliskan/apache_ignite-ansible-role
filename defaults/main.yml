@@ -1,6 +1,8 @@
 ---
 
 install_ignite: true
+firewalld_enabled: true
+
 ignite_user: ignite
 ignite_group: ignite
 ignite_version: 2.7.5
@@ -8,6 +10,7 @@ ignite_mirror_url: https://archive.apache.org/dist
 ignite_bin_download_url: "{{ ignite_mirror_url }}/ignite/{{ ignite_version }}/apache-ignite-{{ ignite_version }}-bin.zip"
 single_node: false
 required_packages:
+  - firewalld
   - unzip
   - java-1.8.0-openjdk
 ignite_base_dir: /opt

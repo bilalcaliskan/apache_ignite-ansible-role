@@ -7,5 +7,3 @@
 - name: Import uninstall_multi_node.yml tasks file
   include_tasks: uninstall_multi_node.yml
   when: ansible_play_hosts | length > 1
-
-...
