@@ -1,6 +1,6 @@
 ## Apache Ignite Ansible Role
 
-[![CI](https://github.com/bilalcaliskan/nginx-ansible-role/workflows/CI/badge.svg?event=push)](https://github.com/bilalcaliskan/nginx-ansible-role/actions?query=workflow%3ACI)
+[![CI](https://github.com/bilalcaliskan/apache_ignite-ansible-role/workflows/CI/badge.svg?event=push)](https://github.com/bilalcaliskan/apache_ignite-ansible-role/actions?query=workflow%3ACI)
 
 Installs and configures Apache Ignite on RedHat/CentOS servers(7 and 8).
 
