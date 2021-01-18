@@ -3,7 +3,8 @@
 - name: Verify port
   hosts: all
   tasks:
-    ### TODO: add verify
-    - name: Debug
-      debug:
-        msg: Debug messages
+    - name: Wait for port 48500 to become open on the remote host
+      wait_for:
+        host: localhost
+        port: 48500
+        delay: 5

@@ -6,7 +6,7 @@
     dest: "{{ item.dest_path }}"
     owner: "{{ ignite_user }}"
     group: "{{ ignite_group }}"
-    mode: "0644"
+    mode: 0644
   loop:
     - {src_path: "node01-config.xml.j2", dest_path: "{{ ignite_config_dir }}/node01-config.xml"}
     - {src_path: "node02-config.xml.j2", dest_path: "{{ ignite_config_dir }}/node02-config.xml"}
@@ -17,8 +17,7 @@
     state: directory
     owner: "{{ ignite_user }}"
     group: "{{ ignite_group }}"
-    mode: "0755"
-    recurse: yes
+    mode: 0755
   loop:
     - data-persist-1
     - data-persist-2
@@ -37,7 +36,7 @@
     - name: Ensure that firewalld configuration is done
       firewalld:
         port: "{{ item }}"
-        permanent: yes
+        permanent: true
         state: enabled
         immediate: true
       loop:
