@@ -25,6 +25,7 @@
 
 - name: Disable swap
   command: swapoff -a
+  changed_when: false
   when:
     - disable_swap
     - ansible_swaptotal_mb > 0
