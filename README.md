@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/bilalcaliskan/apache_ignite-ansible-role/workflows/CI/badge.svg?event=push)](https://github.com/bilalcaliskan/apache_ignite-ansible-role/actions?query=workflow%3ACI)
 
-Installs and configures Apache Ignite on RedHat/CentOS servers(7 and 8).
+Installs and configures Apache Ignite.
 
 ### Requirements
 
