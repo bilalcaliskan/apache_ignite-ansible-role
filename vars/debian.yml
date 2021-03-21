@@ -2,5 +2,6 @@
 
 systemd_service_file_path: /lib/systemd/system/apache-ignite@.service
 required_packages:
+  - firewalld
   - openjdk-8-jdk
   - unzip
