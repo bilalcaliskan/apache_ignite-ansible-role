@@ -16,6 +16,7 @@
   poll: 0
   delegate_to: "{{ play_hosts | first }}"
   run_once: true
+  when: (persistence.enabled | bool)
   register: init_cluster
 
 - name: Check on cluster initialization
