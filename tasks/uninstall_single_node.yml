@@ -57,6 +57,6 @@
       group:
         name: "{{ ignite_group }}"
         state: absent
-  when: 
+  when:
     - ansible_facts.services["apache-ignite@node01-config.xml.service"] is defined
     - ansible_facts.services["apache-ignite@node02-config.xml.service"] is defined
