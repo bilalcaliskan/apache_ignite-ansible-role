@@ -5,7 +5,7 @@ firewalld_enabled: true
 
 ignite_user: ignite
 ignite_group: ignite
-ignite_version: 2.7.5
+ignite_version: 2.10.0
 ignite_mirror_url: https://archive.apache.org/dist
 ignite_bin_download_url: "{{ ignite_mirror_url }}/ignite/{{ ignite_version }}/apache-ignite-{{ ignite_version }}-bin.zip"
 single_node: false
@@ -19,10 +19,9 @@ ignite_log_dir_src: "{{ ignite_root_dir }}/work/log"
 ignite_log_dir_dest: /var/log/apache-ignite
 ignite_config_dir: "{{ ignite_root_dir }}/config"
 ignite_bin_dir: "{{ ignite_root_dir }}/bin"
-systemd_service_file_path: /etc/systemd/system/apache-ignite@.service
 open_file_limit: 166384
 process_limit: 127949
 disable_swap: true
-java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server
+java_opts: -XX:+UseG1GC -Xms256m -Xmx256m -server
 persistence:
   enabled: false

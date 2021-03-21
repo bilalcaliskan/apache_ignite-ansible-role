@@ -3,56 +3,60 @@
 - name: Get service facts
   service_facts:
 
-- name: Ensure Ignite service stopped and disabled
-  service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop:
-    - apache-ignite@node01-config.xml
-    - apache-ignite@node02-config.xml
-
-- name: Firewalld related block while uninstalling
+- name: Remove Apache Ignite block
   block:
-    - name: Revoke firewalld permission
-      firewalld:
-        port: "{{ item }}"
-        immediate: true
-        permanent: true
-        state: disabled
+    - name: Ensure Ignite service stopped and disabled
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
       loop:
-        - 48500-48509/tcp
-        - 49100/tcp
-        - 49101/tcp
-        - 10800/tcp
-  when: ansible_facts.services["firewalld.service"].state == "running"
+        - apache-ignite@node01-config.xml
+        - apache-ignite@node02-config.xml
 
-- name: Remove Ignite related directories and files
-  file:
-    path: "{{ item }}"
-    state: absent
-  loop:
-    - "{{ ignite_root_dir }}"
-    - "{{ ignite_log_dir_dest }}"
-    - "{{ systemd_service_file_path }}"
-    - "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
-    - /opt/data-persist-1
-    - /opt/data-persist-2
-    - /opt/data-wal-1
-    - /opt/data-wal-2
+    - name: Firewalld related block while uninstalling
+      block:
+        - name: Revoke firewalld permission
+          firewalld:
+            port: "{{ item }}"
+            immediate: true
+            permanent: true
+            state: disabled
+          loop:
+            - 48500-48509/tcp
+            - 49100/tcp
+            - 49101/tcp
+            - 10800/tcp
+      when: ansible_facts.services["firewalld.service"].state == "running"
 
-- name: Reload systemd
-  systemd:
-    daemon_reload: true
+    - name: Remove Ignite related directories and files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ ignite_root_dir }}"
+        - "{{ ignite_log_dir_dest }}"
+        - "{{ systemd_service_file_path }}"
+        - "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
+        - /opt/data-persist-1
+        - /opt/data-persist-2
+        - /opt/data-wal-1
+        - /opt/data-wal-2
+        - /var/run/apache-ignite
 
-- name: Ensure {{ ignite_user }} user no more exists
-  user:
-    name: "{{ ignite_user }}"
-    state: absent
+    - name: Reload systemd
+      systemd:
+        daemon_reload: true
 
-- name: Ensure {{ ignite_group }} group no more exists
-  group:
-    name: "{{ ignite_group }}"
-    state: absent
+    - name: Ensure {{ ignite_user }} user no more exists
+      user:
+        name: "{{ ignite_user }}"
+        state: absent
 
-...
+    - name: Ensure {{ ignite_group }} group no more exists
+      group:
+        name: "{{ ignite_group }}"
+        state: absent
+  when: 
+    - ansible_facts.services["apache-ignite@node01-config.xml.service"] is defined
+    - ansible_facts.services["apache-ignite@node02-config.xml.service"] is defined

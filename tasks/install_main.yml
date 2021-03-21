@@ -1,9 +1,10 @@
 ---
 
 - name: Ensure required packages are installed
-  yum:
-    name: "{{ required_packages }}"
+  package:
+    name: "{{ item }}"
     state: present
+  loop: "{{ required_packages }}"
 
 - name: Ensure {{ ignite_group }} group exists
   group:
@@ -94,12 +95,12 @@
     group: "{{ ignite_group }}"
     mode: 0755
 
-- name: Import single_node.yml tasks file
-  import_tasks: install_single_node.yml
+- name: Include single_node.yml tasks file
+  include_tasks: install_single_node.yml
   when: ansible_play_hosts | length == 1
 
-- name: Import multi_node.yml tasks file
-  import_tasks: install_multi_node.yml
+- name: Include multi_node.yml tasks file
+  include_tasks: install_multi_node.yml
   when: ansible_play_hosts | length > 1
 
 - name: Wait for port 48500 to become open on the remote host
@@ -107,34 +108,8 @@
     port: 48500
     delay: 5
 
-- name: Run clustering stuff
-  block:
-    - name: Information message
-      debug:
-        msg: Cluster activation will take a while, go grab a coffee :)
-      delegate_to: localhost
-      run_once: true
-
-    - name: Pause for 30 seconds before starting activation
-      pause:
-        seconds: 30
-
-    - name: Run clustering scripts
-      command: /bin/bash {{ ignite_bin_dir }}/control.sh --activate --yes
-      async: 1000
-      poll: 0
-      delegate_to: "{{ play_hosts | first }}"
-      run_once: true
-      register: init_cluster
-
-    - name: Check on cluster initialization
-      async_status:
-        jid: "{{ init_cluster.ansible_job_id }}"
-      register: check_result
-      until: check_result.finished
-      retries: 30
-      delegate_to: "{{ play_hosts | first }}"
-      run_once: true
+- name: Include cluster.yml tasks file
+  include_tasks: cluster.yml
   when: (persistence.enabled | bool)
 
 - name: Create a symbolic link of log folder

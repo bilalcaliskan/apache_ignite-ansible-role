@@ -46,6 +46,14 @@
         - 10800/tcp
   when: (firewalld_enabled | bool)
 
+- name: Ensure /var/run/apache-ignite directory exists
+  file:
+    path: /var/run/apache-ignite
+    owner: "{{ ignite_user }}"
+    group: "{{ ignite_group }}"
+    state: directory
+    mode: '0755'
+
 - name: Ensure that ignite instances are started
   systemd:
     state: started

@@ -1,5 +1,8 @@
 ---
 
+- name: Include OS specific variables.
+  include_vars: "{{ ansible_os_family | lower }}.yml"
+
 - name: Include install_main.yml file conditionally
   include_tasks: install_main.yml
   when: (install_ignite | bool)

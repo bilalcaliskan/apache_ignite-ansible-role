@@ -58,12 +58,12 @@ ignitenode03.example.com
         ignite_version: 2.7.5
         open_file_limit: 166384
         process_limit: 127949
-        java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -servers
+        java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server -XX:MaxMetaspaceSize=256m
 ```
 
 You can also override default variables inside [vars/main.yml](vars/main.yml)*:
 ```yaml
-java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server
+java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server -XX:MaxMetaspaceSize=256m
 ```
 
 ### Example Playbook File For `Ununinstallation`
