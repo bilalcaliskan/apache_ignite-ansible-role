@@ -1,10 +1,10 @@
-## Apache Ignite Ansible Role
+# Apache Ignite Ansible Role
 
 [![CI](https://github.com/bilalcaliskan/apache_ignite-ansible-role/workflows/CI/badge.svg?event=push)](https://github.com/bilalcaliskan/apache_ignite-ansible-role/actions?query=workflow%3ACI)
 
-Installs and configures Apache Ignite.
+Installs and configures Apache Ignite on Redhat/Debian based hosts.
 
-### Requirements
+## Requirements
 
 This role requires minimum Ansible version 2.4 and maximum Ansible version 2.9. You can install suggested version with pip:
 ```
@@ -20,25 +20,32 @@ No special requirements; note that this role requires root access, so either run
     - role: bilalcaliskan.apache_ignite
 ```
 
-### Role Variables
+## Download
+This role is also available on [Ansible Galaxy](https://galaxy.ansible.com/bilalcaliskan/apache_ignite), you can install with below command:
+```shell
+$ ansible-galaxy install bilalcaliskan.apache_ignite
+```
+
+## Role Variables
 See the default values in [defaults/main.yml](defaults/main.yml). You can overwrite them in [vars/main.yml](vars/main.yml) if neccessary or you can set them while running playbook.
 
-> Please note that this role will ensure that `firewalld` systemd service on your servers are started and enabled by default. If you want to stop and disable `firewalld` service, please modify below variable as false when running playbook:  
-> ```yaml  
+> Please note that this role will ensure that `firewalld` systemd service on your servers are started and enabled by default. If you want to stop and disable `firewalld` service, please modify below variable as false when running playbook:
+> ```yaml
 > firewalld_enabled: false
 
-### Dependencies
+## Dependencies
 
 None
 
-### Example Inventory File
-*Single node*
+## Examples
+### Inventory
+**Single node**
 ```
 [ignite]
 ignitenode01.example.com
 ```
 
-*Multi node*
+**Multi node**
 ```
 [ignite]
 ignitenode01.example.com
@@ -46,7 +53,7 @@ ignitenode02.example.com
 ignitenode03.example.com
 ```
 
-### Example Playbook File For Installation
+### Installation
 
 ```yaml
 - hosts: all
@@ -61,12 +68,7 @@ ignitenode03.example.com
         java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server -XX:MaxMetaspaceSize=256m
 ```
 
-You can also override default variables inside [vars/main.yml](vars/main.yml)*:
-```yaml
-java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server -XX:MaxMetaspaceSize=256m
-```
-
-### Example Playbook File For `Ununinstallation`
+### Uninstallation
 
 ```yaml
 - hosts: all
@@ -77,6 +79,13 @@ java_opts: -XX:+UseG1GC -Xms1g -Xmx1g -server -XX:MaxMetaspaceSize=256m
         install_ignite: false
 ```
 
-### License
+## Development
+This project requires below tools while developing:
+- [Ansible 2.4 or higher](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+- [pre-commit](https://pre-commit.com/)
+- [ansible-lint](https://ansible-lint.readthedocs.io/en/latest/installing.html#using-pip-or-pipx) - required by [pre-commit](https://pre-commit.com/)
+- [Bash shell](https://www.gnu.org/software/bash/) - required by [pre-commit](https://pre-commit.com/)
 
-MIT / BSD
+## License
+
+Apache License 2.0
