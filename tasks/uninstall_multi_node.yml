@@ -10,7 +10,6 @@
         name: apache-ignite@default-config.xml
         state: stopped
         enabled: false
-      ignore_errors: true
 
     - name: Firewalld related block while uninstalling
       block:
@@ -34,7 +33,6 @@
         - "{{ ignite_root_dir }}"
         - "{{ ignite_log_dir_dest }}"
         - "{{ systemd_service_file_path }}"
-        #- "{{ ignite_root_dir }}-{{ ignite_version }}-bin"
         - /opt/data-persist
         - /opt/data-wal
         - /var/run/apache-ignite
