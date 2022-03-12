@@ -1,5 +1,4 @@
 ---
-
 - name: Include uninstall_single_node.yml tasks file
   include_tasks: uninstall_single_node.yml
   when: ansible_play_hosts | length == 1

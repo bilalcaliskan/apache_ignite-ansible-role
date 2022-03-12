@@ -1,8 +1,8 @@
 ---
-
 - name: Converge
   hosts: all
   become: true
-  ignore_errors: true
   roles:
     - role: bilalcaliskan.apache_ignite
+      vars:
+        disable_swap: false

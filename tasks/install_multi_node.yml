@@ -1,5 +1,4 @@
 ---
-
 - name: Transfer instance configuration template files to the remote host
   template:
     src: default-config.xml.j2

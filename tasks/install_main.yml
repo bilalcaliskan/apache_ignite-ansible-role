@@ -1,5 +1,4 @@
 ---
-
 - name: Update cache on Debian based hosts
   apt:
     update_cache: true
@@ -37,13 +36,6 @@
   when:
     - disable_swap
     - ansible_swaptotal_mb > 0
-
-- name: Stop firewalld if desired by user
-  service:
-    name: firewalld
-    state: stopped
-    enabled: false
-  when: not (firewalld_enabled | bool)
 
 - name: Check if ignite downloaded and extracted
   stat:

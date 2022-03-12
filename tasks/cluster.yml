@@ -1,5 +1,4 @@
 ---
-
 - name: Information message
   debug:
     msg: Cluster activation will take a while, go grab a coffee :)

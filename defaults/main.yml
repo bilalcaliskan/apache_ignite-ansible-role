@@ -1,13 +1,11 @@
 ---
-
 install_ignite: true
-firewalld_enabled: true
+firewalld_enabled: false
 ignite_user: ignite
 ignite_group: ignite
 ignite_version: 2.10.0
 ignite_mirror_url: https://archive.apache.org/dist
 ignite_bin_download_url: "{{ ignite_mirror_url }}/ignite/{{ ignite_version }}/apache-ignite-{{ ignite_version }}-bin.zip"
-single_node: false
 ignite_base_dir: /opt
 ignite_root_dir: "{{ ignite_base_dir }}/apache-ignite"
 ignite_log_dir_src: "{{ ignite_root_dir }}/work/log"
